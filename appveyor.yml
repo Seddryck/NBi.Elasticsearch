@@ -1,0 +1,50 @@
+version: build.{build}
+image: Visual Studio 2017
+init:
+- cmd: git config --global core.autocrlf true
+before_build:
+- cmd: >-
+    gitversion /l console /output buildserver /updateAssemblyInfo
+
+    nuget restore
+build:
+  verbosity: minimal
+after_build:
+- ps: >-
+    $nuget_version = "$env:GitVersion_NuGetVersionV2"
+
+    .\.packages\package-NBi-Elasticsearch.ps1 $nuget_version
+
+test_script:
+- ps: nunit-console-x86 NBi.Testing.Core.Elasticsearch\bin\debug\NBi.Testing.Core.Elasticsearch.dll /run:NBi.Testing.Core.Elasticsearch.Unit
+artifacts:
+- path: NBi.Core.Elasticsearch\bin\Debug
+  name: NBi.Elasticsearch
+- path: .nupkg\NBi.Elasticsearch.*.nupkg
+  name: Package NBi.Elasticsearch 
+deploy:
+- provider: NuGet
+  api_key:
+    secure: 7LDAnpfRuEmLf/4hhERYnfy3tHLBqC7wqScUEviYVYkNvrM7C3NN0h73se3QuoNh
+  on:
+    branch: develop
+- provider: NuGet
+  api_key:
+    secure: 7LDAnpfRuEmLf/4hhERYnfy3tHLBqC7wqScUEviYVYkNvrM7C3NN0h73se3QuoNh
+  on:
+    APPVEYOR_REPO_TAG: true
+- provider: NuGet
+  server: https://www.myget.org/F/nbi-Elasticsearch/api/v2/package
+  api_key:
+    secure: +E89GuWTCkM1DpiRGoO3oRLIvLIjb8aPsHqNvga0ID/xdUx0cvDjI7XVdF12rmEm
+  on:
+    branch: develop
+- description: ''
+  provider: GitHub
+  auth_token:
+    secure: Gr2fraoXD6EyzbJJTfK+lk65/SO5SUaeQNzN51G2BB+wiS95xBeiFcl/8k5LP1h8
+  artifact: NBi.Elasticsearch
+  draft: true
+  prerelease: false
+  on:
+    APPVEYOR_REPO_TAG: true

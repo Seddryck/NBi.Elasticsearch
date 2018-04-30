@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<testSuite name="Acceptance Testing: query equalTo ResultSet" xmlns="http://NBi/TestSuite">
+  <settings>
+    <default apply-to="system-under-test">
+      <connectionString>@Elasticsearch</connectionString>
+    </default>
+  </settings>
+  <test name="5 highest balances returns 5 rows" uid="0001">
+    <system-under-test>
+      <resultSet>
+        <query>
+          <![CDATA[
+          GET bank/_search
+          {
+             "query": {"match_all": { }}
+             , "size": 5
+             , "_source": ["gender", "age", "balance"]
+             , "sort": [ { "balance" : {"order" : "desc"}}]
+          }
+          ]]>
+        </query>
+      </resultSet>
+    </system-under-test>
+    <assert>
+      <row-count>
+        <equal>5</equal>
+      </row-count>
+    </assert>
+  </test>
+  <test name="5 highest balance" uid="0001">
+    <system-under-test>
+      <resultSet>
+        <query>
+          <![CDATA[
+          GET bank/_search
+          {
+             "query": {"match_all": { }}
+             , "size": 5
+             , "_source": ["gender", "age", "balance"]
+             , "sort": [ { "balance" : {"order" : "desc"}}]
+          }
+          ]]>
+        </query>
+      </resultSet>
+    </system-under-test>
+    <assert>
+      <all-rows>
+        <combination operator="and">
+          <!--<predicate operand="gender" type="text">
+            <any-of>
+              <item>M</item>
+              <item>F</item>
+            </any-of>
+          </predicate>-->
+          <predicate operand="age">
+            <within-range>[20;40]</within-range>
+          </predicate>
+          <predicate operand="balance">
+            <more-than>48000</more-than>
+          </predicate>
+        </combination>
+      </all-rows>
+    </assert>
+  </test>
+  <test name="Top 3 of average balance by state" uid="0002">
+    <system-under-test>
+      <resultSet>
+        <query>
+          <![CDATA[
+          GET /bank/_search
+          {
+            "size": 0,
+            "aggs": {
+              "group_by_state": {
+                "terms": {
+                  "field": "state.keyword",
+                  "size" : 3,
+                  "order": {
+                    "average_balance": "desc"
+                  }
+                },
+                "aggs": {
+                  "average_balance": {
+                    "avg": {
+                      "field": "balance"
+                    }
+                  }
+                }
+              }
+            }
+          }
+          ]]>
+        </query>
+      </resultSet>
+    </system-under-test>
+    <assert>
+      <equalTo tolerance="1">
+        <resultSet>
+          <row>
+            <cell column-name="key">WA</cell>
+            <cell column-name="doc_count">(+)</cell>
+            <cell column-name="average_balance">43265</cell>
+          </row>
+          <row>
+            <cell>AL</cell>
+            <cell>6</cell>
+            <cell>41418</cell>
+          </row>
+          <row>
+            <cell>RI</cell>
+            <cell>[5;10]</cell>
+            <cell>40040</cell>
+          </row>
+        </resultSet>
+      </equalTo>
+    </assert>
+  </test>
+</testSuite>
