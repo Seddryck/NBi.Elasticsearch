@@ -12,13 +12,13 @@ namespace NBi.Core.Elasticsearch.Query.Client
     {
         private readonly ElasticLowLevelClient lowLevelClient;
 
-        public ElasticsearchClientOperation(string hostname, int port, string username, string password)
+        public ElasticsearchClientOperation(ElasticsearchClientOption operation)
         {
-            var node = new Uri($"http://{hostname}:{port.ToString()}");
+            var node = new Uri($"http://{operation.Hostname}:{operation.Port.ToString()}");
             var config = new ConnectionConfiguration(node);
 
-            if (!string.IsNullOrEmpty(username))
-                config = config.BasicAuthentication(username, password);
+            if (!string.IsNullOrEmpty(operation.Username))
+                config = config.BasicAuthentication(operation.Username, operation.Password);
 
             lowLevelClient = new ElasticLowLevelClient(config);
         }

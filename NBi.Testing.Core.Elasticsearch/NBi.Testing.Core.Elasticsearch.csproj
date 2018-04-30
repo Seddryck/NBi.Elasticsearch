@@ -45,6 +45,8 @@
     <Compile Include="Unit\Configuration\Extension\ExtensionAnalyzerTest.cs" />
     <Compile Include="Unit\Query\Client\ElasticsearchClientFactoryTest.cs" />
     <Compile Include="Unit\Query\Client\ElasticsearchClientTest.cs" />
+    <Compile Include="Unit\Query\Client\TokenConnectionStringParserTest.cs" />
+    <Compile Include="Unit\Query\Client\UriConnectionStringParserTest.cs" />
     <Compile Include="Unit\Query\Command\ElasticsearchCommandFactoryTest.cs" />
     <Compile Include="Unit\Query\Command\ElasticsearchCommandParserTest.cs" />
     <Compile Include="Unit\Query\Execution\ExecutionEngineFactoryTest.cs" />

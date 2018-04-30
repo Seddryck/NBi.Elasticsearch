@@ -39,6 +39,11 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\ProjectAssemblyInfo.cs" />
+    <Compile Include="Query\Client\DbConnectionStringBuilderExtension.cs" />
+    <Compile Include="Query\Client\ElasticsearchClientOption.cs" />
+    <Compile Include="Query\Client\IConnectionStringParser.cs" />
+    <Compile Include="Query\Client\TokenConnectionStringParser.cs" />
+    <Compile Include="Query\Client\UriConnectionStringParser.cs" />
     <Compile Include="Query\Command\ElasticsearchCommandOperation.cs" />
     <Compile Include="Query\Command\ElasticsearchCommand.cs" />
     <Compile Include="Query\Command\ElasticsearchCommandFactory.cs" />

@@ -16,12 +16,15 @@ namespace NBi.Testing.Core.Elasticsearch.Unit.Query.Command
 {
     public class ElasticsearchCommandFactoryTest
     {
-        private string base64AuthKey = Convert.ToBase64String(Encoding.UTF8.GetBytes("@uthK3y"));
+        private ElasticsearchClientOption Option = new ElasticsearchClientOption("elasticsearch://hostname")
+        {
+            Hostname = "host"
+        };
 
         [Test]
         public void CanHandle_ElasticsearchClient_True()
         {
-            var client = new ElasticsearchClient("host", 9200, "user", "p@ssw0rd");
+            var client = new ElasticsearchClient(Option);
             var factory = new ElasticsearchCommandFactory();
             Assert.That(factory.CanHandle(client), Is.True);
         }
@@ -37,7 +40,7 @@ namespace NBi.Testing.Core.Elasticsearch.Unit.Query.Command
         [Test]
         public void Instantiate_ElasticsearchClientAndQuery_CommandNotNull()
         {
-            var client = new ElasticsearchClient("host", 9200, "user", "p@ssw0rd");
+            var client = new ElasticsearchClient(Option);
             var query = Mock.Of<IQuery>(x => x.Statement == @"GET index/type/_search { ""query"": {""match_all"": { }} }");
             var factory = new ElasticsearchCommandFactory();
             var command = factory.Instantiate(client, query);
@@ -47,7 +50,7 @@ namespace NBi.Testing.Core.Elasticsearch.Unit.Query.Command
         [Test]
         public void Instantiate_ElasticsearchClientAndQuery_CommandImplementationCorrectType()
         {
-            var client = new ElasticsearchClient("host", 9200, "user", "p@ssw0rd");
+            var client = new ElasticsearchClient(Option);
             var query = Mock.Of<IQuery>(x => x.Statement == @"GET index/type/_search { ""query"": {""match_all"": { }} }");
             var factory = new ElasticsearchCommandFactory();
             var command = factory.Instantiate(client, query);
@@ -59,7 +62,7 @@ namespace NBi.Testing.Core.Elasticsearch.Unit.Query.Command
         [Test]
         public void Instantiate_ElasticsearchClientAndQuery_ClientCorrectType()
         {
-            var client = new ElasticsearchClient("host", 9200, "user", "p@ssw0rd");
+            var client = new ElasticsearchClient(Option);
             var query = Mock.Of<IQuery>(x => x.Statement == @"GET index/type/_search { ""query"": {""match_all"": { }} }");
             var factory = new ElasticsearchCommandFactory();
             var command = factory.Instantiate(client, query);
