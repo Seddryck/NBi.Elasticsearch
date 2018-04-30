@@ -10,7 +10,7 @@ Write-Host "Calculating dependencies ..."
 $dependencies = @{}
 $solutionRoot = Join-Path ($root) ".."
 Write-Host "Looking for projects in $solutionRoot ..."
-$projects = Get-ChildItem $solutionRoot | ?{ $_.PSIsContainer -and $_.Name -like "*Elasticsearch*"-and $_.Name -notLike "*Testing*"} | select Name, FullName
+$projects = Get-ChildItem $solutionRoot | ?{ $_.PSIsContainer -and $_.Name -like "NBi.Core.Elasticsearch*"-and $_.Name -notLike "*Testing*"} | select Name, FullName
 foreach($proj in $projects)
 {
     $projName = $proj.name
