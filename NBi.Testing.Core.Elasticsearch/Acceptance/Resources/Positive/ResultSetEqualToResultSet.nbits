@@ -46,12 +46,12 @@
     <assert>
       <all-rows>
         <combination operator="and">
-          <!--<predicate operand="gender" type="text">
+          <predicate operand="gender" type="text">
             <any-of>
               <item>M</item>
               <item>F</item>
             </any-of>
-          </predicate>-->
+          </predicate>
           <predicate operand="age">
             <within-range>[20;40]</within-range>
           </predicate>
