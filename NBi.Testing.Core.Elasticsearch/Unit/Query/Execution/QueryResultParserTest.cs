@@ -19,7 +19,7 @@ namespace NBi.Testing.Core.Elasticsearch.Unit.Query.Execution
         public void SetUp()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = $"{assembly.GetName().Name}.Unit.Query.Execution.Resources.QueryResult.json";
+            var resourceName = $"{GetType().Namespace}.Resources.QueryResult.json";
 
             using (var stream = assembly.GetManifestResourceStream(resourceName))
             using (var reader = new StreamReader(stream))
