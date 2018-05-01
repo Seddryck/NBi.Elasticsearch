@@ -52,7 +52,11 @@
     <Compile Include="Query\Client\ElasticsearchClient.cs" />
     <Compile Include="Query\Command\ElasticsearchCommandParser.cs" />
     <Compile Include="Query\Command\ElasticsearchSearch.cs" />
+    <Compile Include="Query\Execution\AggregationResultParser.cs" />
+    <Compile Include="Query\Execution\BaseResultParser.cs" />
     <Compile Include="Query\Execution\ElasticsearchExecutionEngine.cs" />
+    <Compile Include="Query\Execution\IResultParser.cs" />
+    <Compile Include="Query\Execution\QueryResultParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

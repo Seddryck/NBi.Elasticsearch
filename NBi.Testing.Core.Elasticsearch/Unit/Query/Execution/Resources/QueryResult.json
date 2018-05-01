@@ -1,0 +1,87 @@
+﻿{
+  "took": 2,
+  "timed_out": false,
+  "_shards": {
+    "total": 5,
+    "successful": 5,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": 1000,
+    "max_score": null,
+    "hits": [
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "248",
+        "_score": null,
+        "_source": {
+          "balance": 49989,
+          "gender": "M",
+          "age": 36
+        },
+        "sort": [
+          49989
+        ]
+      },
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "854",
+        "_score": null,
+        "_source": {
+          "balance": 49795,
+          "gender": "F",
+          "age": 25
+        },
+        "sort": [
+          49795
+        ]
+      },
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "240",
+
+        "_score": null,
+        "_source": {
+          "balance": 49741,
+          "gender": "F",
+          "age": 35
+        },
+        "sort": [
+          49741
+        ]
+      },
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "97",
+        "_score": null,
+        "_source": {
+          "balance": 49671,
+          "gender": "F",
+          "age": 40
+        },
+        "sort": [
+          49671
+        ]
+      },
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "842",
+        "_score": null,
+        "_source": {
+          "balance": 49587,
+          "gender": "F",
+          "age": 23
+        },
+        "sort": [
+          49587
+        ]
+      }
+    ]
+  }
+}
