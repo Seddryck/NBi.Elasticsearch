@@ -5,56 +5,61 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NBi.Core.Elasticsearch.Query.Client;
+using Moq;
 
 namespace NBi.Testing.Core.Elasticsearch.Unit.Query.Client
 {
     public class ElasticsearchClientFactoryTest
     {
         [Test]
-        public void CanHandle_ElasticsearchWithApi_True()
+        public void CanHandle_WrongParsers_AllCalled()
         {
-            var factory = new ElasticsearchClientFactory();
-            Assert.That(factory.CanHandle($@"Hostname=localhost;port=9200;Username=admin;password=p@ssw0rd;api=Elasticsearch"), Is.True);
+            var uriParser = new Mock<IConnectionStringParser>();
+            uriParser.Setup(x => x.CanHandle(It.IsAny<string>())).Returns(false);
+
+            var tokenParser = new Mock<IConnectionStringParser>();
+            tokenParser.Setup(x => x.CanHandle(It.IsAny<string>())).Returns(false);
+
+            var factory = new ElasticsearchClientFactory(new IConnectionStringParser[] { uriParser.Object, tokenParser.Object });
+            var result = factory.CanHandle("myConnectionString");
+
+            uriParser.Verify(x => x.CanHandle("myConnectionString"), Times.Once);
+            tokenParser.Verify(x => x.CanHandle("myConnectionString"), Times.Once);
         }
 
         [Test]
-        public void CanHandle_ElasticsearchWithApi_WithoutBasicAuthTrue()
+        public void CanHandle_ValidParser_NextNotCalled()
         {
-            var factory = new ElasticsearchClientFactory();
-            Assert.That(factory.CanHandle($@"Hostname=localhost;port=9200;api=Elasticsearch"), Is.True);
+            var uriParser = new Mock<IConnectionStringParser>();
+            uriParser.Setup(x => x.CanHandle(It.IsAny<string>())).Returns(true);
+
+            var tokenParser = new Mock<IConnectionStringParser>();
+            tokenParser.Setup(x => x.CanHandle(It.IsAny<string>())).Returns(false);
+
+            var factory = new ElasticsearchClientFactory(new IConnectionStringParser[] { uriParser.Object, tokenParser.Object });
+            var result = factory.CanHandle("myConnectionString");
+
+            uriParser.Verify(x => x.CanHandle("myConnectionString"), Times.Once);
+            tokenParser.Verify(x => x.CanHandle(It.IsAny<string>()), Times.Never);
         }
 
         [Test]
-        public void CanHandle_OleDbConnectionString_False()
+        public void Instantiate_ElasticsearchTokens_ElasticsearchClient()
         {
             var factory = new ElasticsearchClientFactory();
-            Assert.That(factory.CanHandle("data source=SERVER;initial catalog=DB;IntegratedSecurity=true;Provider=OLEDB.1"), Is.False);
+            var client = factory.Instantiate($@"Hostname=localhost;port=9200;Username=admin;password=p@ssw0rd;api=Elasticsearch");
+            Assert.That(client, Is.Not.Null);
+            Assert.That(client, Is.TypeOf<ElasticsearchClient>());
         }
 
         [Test]
-        public void CanHandle_OleDbConnectionString_HalfBasicAuthFalse()
+        public void Instantiate_ElasticsearchUri_ElasticsearchClient()
         {
             var factory = new ElasticsearchClientFactory();
-            Assert.That(factory.CanHandle($@"Hostname=localhost;port=9200;Username=admin;api=Elasticsearch"), Is.False);
+            var client = factory.Instantiate($@"elasticsearch://locahost");
+            Assert.That(client, Is.Not.Null);
+            Assert.That(client, Is.TypeOf<ElasticsearchClient>());
         }
-
-        [Test]
-        public void Instantiate_ElasticsearchConnectionString_ElasticsearchClient()
-        {
-            var factory = new ElasticsearchClientFactory();
-            var session = factory.Instantiate($@"Hostname=localhost;port=9200;Username=admin;password=p@ssw0rd;api=Elasticsearch");
-            Assert.That(session, Is.Not.Null);
-            Assert.That(session, Is.TypeOf<ElasticsearchClient>());
-        }
-
-        [Test]
-        public void Instantiate_ElasticsearchConnectionStringWithoutBasicAuth_ElasticsearchClient()
-        {
-            var factory = new ElasticsearchClientFactory();
-            var session = factory.Instantiate($@"Hostname=localhost;port=9200;api=Elasticsearch");
-            Assert.That(session, Is.Not.Null);
-            Assert.That(session, Is.TypeOf<ElasticsearchClient>());
-        }
-
+        
     }
 }

@@ -22,10 +22,13 @@ namespace NBi.Core.Elasticsearch.Query.Execution
 
         private readonly Stopwatch stopWatch = new Stopwatch();
 
+        private readonly IEnumerable<IResultParser> Parsers;
+
         protected internal ElasticsearchExecutionEngine(ElasticsearchClientOperation client, ElasticsearchCommandOperation command)
         {
             Client = client;
             Command = command;
+            Parsers = new List<IResultParser>() { new AggregationResultParser(), new QueryResultParser() };
         }
 
         public DataSet Execute()
@@ -37,58 +40,32 @@ namespace NBi.Core.Elasticsearch.Query.Execution
             return ds;
         }
 
-        protected dynamic OnExecute(ElasticsearchClientOperation client, ElasticsearchSearch query)
+        protected JObject OnExecute(ElasticsearchClientOperation client, ElasticsearchSearch query)
         {
             var response = client.Execute(query);
 
             if (!response.Success)
                 throw new Exception(response.Body);
 
-            var result = JObject.Parse(response.Body);
-            if (result.TryGetValue("aggregations", out JToken root))
-                return root.SelectTokens("*.buckets").Values().ToArray();
-            else if (result.TryGetValue("hits", out root))
-                return root.SelectTokens("hits[*]._source").ToArray();
-            else
-                throw new ArgumentOutOfRangeException();
+            var root = JObject.Parse(response.Body);
+            return root;
         }
 
         protected DataSet OnExecuteDataSet(ElasticsearchClientOperation client, ElasticsearchSearch query)
         {
+            var root = OnExecute(client, query);
+            var parser = Parsers.FirstOrDefault(x => x.CanHandle(root)) ?? throw new ArgumentException();
+
             var ds = new DataSet();
-            var dt = new DataTable();
+            var dt = parser.Execute(root);
+
             ds.Tables.Add(dt);
-
-            var results = OnExecute(client, query);
-
-            foreach (JObject result in results)
-            {
-                var dico = result.ToObject<Dictionary<string, object>>();
-                AddObjectToDataTable(dico, ref dt);
-            }
             dt.AcceptChanges();
 
             return ds;
         }
 
-        private void AddObjectToDataTable(IDictionary<string, object> dico, ref DataTable dt)
-        {
-            var dr = dt.NewRow();
-            foreach (var attribute in dico.Keys)
-            {
-                if (!dt.Columns.Contains(attribute))
-                    dt.Columns.Add(new DataColumn(attribute, typeof(object)) { DefaultValue = DBNull.Value });
-                // If the result has a single child named 'value' then we should parse it directly
-                if (dico[attribute] is JObject 
-                    && (dico[attribute] as JObject).Children<JProperty>().Count() == 1 
-                    && (dico[attribute] as JObject).SelectToken("value")!=null)
-                    dr[attribute] = (dico[attribute] as JObject).SelectToken("value").ToObject<object>(); 
-                else
-                    dr[attribute] = dico[attribute];
-
-            }
-            dt.Rows.Add(dr);
-        }
+        
 
         public object ExecuteScalar()
         {
@@ -101,14 +78,7 @@ namespace NBi.Core.Elasticsearch.Query.Execution
 
         public object OnExecuteScalar(ElasticsearchClientOperation client, ElasticsearchSearch query)
         {
-            var ds = new DataSet();
-            var dt = new DataTable();
-            ds.Tables.Add(dt);
-
-            var result = OnExecute(client, query);
-            if (result!=null && result.Count>0)
-                return result.First();
-            return null;
+            throw new NotImplementedException();
         }
 
         public IEnumerable<T> ExecuteList<T>()
@@ -122,14 +92,7 @@ namespace NBi.Core.Elasticsearch.Query.Execution
 
         public List<T> OnExecuteList<T>(ElasticsearchClientOperation client, ElasticsearchSearch query)
         {
-            var list = new List<T>();
-
-            var results = OnExecute(client, query);
-
-            foreach (var result in results)
-                list.Add(result);
-            
-            return list;
+            throw new NotImplementedException();
         }
 
         protected void StartWatch()

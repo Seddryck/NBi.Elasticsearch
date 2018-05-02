@@ -9,38 +9,30 @@ namespace NBi.Core.Elasticsearch.Query.Client
 {
     public class ElasticsearchClientFactory : Extensibility.Query.IClientFactory
     {
+        private IEnumerable<IConnectionStringParser> Parsers { get; }
 
-        public bool CanHandle(string connectionString)
+        public ElasticsearchClientFactory()
         {
-            var connectionStringBuilder = new DbConnectionStringBuilder() { ConnectionString = connectionString };
-            return connectionStringBuilder.ContainsKey(ElasticsearchClient.HostnameToken)
-                && HasBasicAuthOrNot(connectionStringBuilder)
-                && HasApiSetTo(connectionStringBuilder, "Elasticsearch");
+            Parsers = new List<IConnectionStringParser>()
+            {
+                new UriConnectionStringParser(),
+                new TokenConnectionStringParser()
+            };
         }
 
-        protected bool HasApiSetTo(DbConnectionStringBuilder connectionStringBuilder, string api)
-            => connectionStringBuilder.ContainsKey(ElasticsearchClient.ApiToken) && ((string)connectionStringBuilder[ElasticsearchClient.ApiToken]).ToLowerInvariant() == api.ToLowerInvariant();
+        internal ElasticsearchClientFactory(IEnumerable<IConnectionStringParser> parsers)
+        {
+            Parsers = new List<IConnectionStringParser>(parsers);
+        }
 
-        protected bool HasBasicAuthOrNot(DbConnectionStringBuilder connectionStringBuilder)
-            =>  (
-                    connectionStringBuilder.ContainsKey(ElasticsearchClient.UsernameToken) 
-                    && connectionStringBuilder.ContainsKey(ElasticsearchClient.PasswordToken)
-                )
-                ||
-                (
-                    !connectionStringBuilder.ContainsKey(ElasticsearchClient.UsernameToken)
-                    && !connectionStringBuilder.ContainsKey(ElasticsearchClient.PasswordToken)
-                );
-
+        public bool CanHandle(string connectionString)
+            => Parsers.Any(p => p.CanHandle(connectionString));
+        
         public Extensibility.Query.IClient Instantiate(string connectionString)
         {
-            var connectionStringBuilder = new DbConnectionStringBuilder() { ConnectionString = connectionString };
-            var hostname = (string)connectionStringBuilder[ElasticsearchClient.HostnameToken];
-            var port = Int32.Parse((string)connectionStringBuilder[ElasticsearchClient.PortToken]);
-            var username = connectionStringBuilder.ContainsKey(ElasticsearchClient.UsernameToken) ? (string)connectionStringBuilder[ElasticsearchClient.UsernameToken] : string.Empty;
-            var password = connectionStringBuilder.ContainsKey(ElasticsearchClient.PasswordToken) ? (string)connectionStringBuilder[ElasticsearchClient.PasswordToken] : string.Empty;
-
-            return new ElasticsearchClient(hostname, port, username, password);
+            var parser = Parsers.First(p => p.CanHandle(connectionString));
+            var option = parser.Execute(connectionString);
+            return new ElasticsearchClient(option);
         }
     }
 }

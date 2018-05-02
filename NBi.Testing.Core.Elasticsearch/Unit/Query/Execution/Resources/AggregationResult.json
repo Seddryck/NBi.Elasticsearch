@@ -1,0 +1,142 @@
+﻿{
+  "took": 2,
+  "timed_out": false,
+  "_shards": {
+    "total": 5,
+    "successful": 5,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": 1000,
+    "max_score": 1.0,
+    "hits": [
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "25",
+        "_score": 1.0,
+        "_source": {
+          "account_number": 25,
+          "balance": 40540,
+          "firstname": "Virginia",
+          "lastname": "Ayala",
+          "age": 39,
+          "gender": "F",
+          "address": "171 Putnam Avenue",
+          "employer": "Filodyne",
+          "email": "virginiaayala@filodyne.com",
+          "city": "Nicholson",
+          "state": "PA"
+        }
+      },
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "44",
+        "_score": 1.0,
+        "_source": {
+
+          "account_number": 44,
+          "balance": 34487,
+          "firstname": "Aurelia",
+          "lastname": "Harding",
+          "age": 37,
+          "gender": "M",
+          "address": "502 Baycliff Terrace",
+          "employer": "Orbalix",
+          "email": "aureliaharding@orbalix.com",
+          "city": "Yardville",
+          "state": "DE"
+        }
+      },
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "99",
+        "_score": 1.0,
+        "_source": {
+          "account_number": 99,
+          "balance": 47159,
+          "firstname": "Ratliff",
+          "lastname": "Heath",
+          "age": 39,
+          "gender": "F",
+          "address": "806 Rockwell Place",
+          "employer": "Zappix",
+          "email": "ratliffheath@zappix.com",
+          "city": "Shaft",
+          "state": "ND"
+
+        }
+      },
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "119",
+        "_score": 1.0,
+        "_source": {
+          "account_number": 119,
+          "balance": 49222,
+          "firstname": "Laverne",
+          "lastname": "Johnson",
+          "age": 28,
+          "gender": "F",
+          "address": "302 Howard Place",
+          "employer": "Senmei",
+          "email": "lavernejohnson@senmei.com",
+          "city": "Herlong",
+          "state": "DC"
+        }
+      },
+      {
+        "_index": "bank",
+        "_type": "_doc",
+        "_id": "126",
+        "_score": 1.0,
+        "_source": {
+          "account_number": 126,
+          "balance": 3607,
+          "firstname": "Effie",
+          "lastname": "Gates",
+          "age": 39,
+          "gender": "F",
+          "address": "620 National Drive",
+          "employer": "Digitalus",
+          "email": "effiegates@digitalus.com",
+          "city": "Blodgett",
+          "state": "MD"
+        }
+      }
+    ]
+  },
+  "aggregations": {
+    "group_by_state": {
+      "doc_count_error_upper_bound": -1,
+      "sum_other_doc_count": 986,
+      "buckets": [
+        {
+          "key": "WA",
+          "doc_count": 3,
+          "average_balance": {
+            "value": 43265.333333333336
+          }
+        },
+        {
+          "key": "AL",
+          "doc_count": 6,
+          "average_balance": {
+            "value": 41418.166666666664
+          }
+        },
+        {
+          "key": "RI",
+          "doc_count": 5,
+          "average_balance": {
+            "value": 40040.6
+          }
+        }
+      ]
+    }
+  }
+}

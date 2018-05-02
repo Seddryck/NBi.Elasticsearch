@@ -34,7 +34,7 @@ deploy:
   on:
     APPVEYOR_REPO_TAG: true
 - provider: NuGet
-  server: https://www.myget.org/F/nbi-Elasticsearch/api/v2/package
+  server: https://www.myget.org/F/nbi-elasticsearch/api/v2/package
   api_key:
     secure: +E89GuWTCkM1DpiRGoO3oRLIvLIjb8aPsHqNvga0ID/xdUx0cvDjI7XVdF12rmEm
   on:
